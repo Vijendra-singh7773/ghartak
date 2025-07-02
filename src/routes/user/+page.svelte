@@ -51,6 +51,39 @@
     message = '';
   };
 
+  
+   import { goto } from '$app/navigation';
+
+  const goToMap = () => {
+    goto('/map');
+  };
+
+
+
+
+
+    let query = '';
+  let results = [];
+
+  const search = async () => {
+    // Simulated search results
+    results = [
+     
+    ].filter(item => item.name.toLowerCase().includes(query.toLowerCase()));
+  };
+
+
+
+
+
+ 
+    let startPoint = "";
+  let destination = "";
+
+  
+    function openMap() {
+    alert("Opening map for nearby buses..."); // Replace with actual map logic
+  }
    </script>
 
 
@@ -67,11 +100,11 @@
 
   <!-- Desktop Menu -->
    <div class="hidden md:flex space-x-20 font-medium text-gray-700">
-      <a href="/" class="hover:text-blue-500">Home</a>
       <a href="/" class="hover:text-blue-500">About</a>
-      <a href="/track" class="hover:text-blue-500">Track Order</a>
-      <a href="/delivery" class="hover:text-blue-500">Delivery Request</a>
-      <a href="/contact" class="hover:text-blue-500">Contact</a>
+      <a href="/" class="hover:text-blue-500">Current Ticket</a>
+      <a href="/track" class="hover:text-blue-500">Bus Timing</a>
+      <a href="/delivery" class="hover:text-blue-500">Nearby Stops</a>
+      <a href="/contact" class="hover:text-blue-500">Nearby Buses</a>
     </div>
    
  
@@ -120,19 +153,20 @@
       <!-- Profile/Login (Mobile) -->
       {#if currentUser}
         <div class="mt-4 border-t pt-4 space-y-2">
-           <a href="/" class="block">Home</a>
-      <a href="/delivery" class="block">About</a>
-      <a href="/track" class="block">Track Order</a>
-      <a href="/about" class="block">Delivery Request</a>
-      <a href="/contact" class="block">Contact</a>
+ <a href="/" class="block px-4 py-2">About</a>
+      <a href="/" class="block px-4 py-2">Current Ticket</a>
+      <a href="/track" class="block px-4 py-2">Bus Timing</a>
+      <a href="/delivery" class="block px-4 py-2">Nearby Stops</a>
+      <a href="/contact" class="block px-4 py-2">Nearby Buses</a>
            
     
-          <button on:click={logout} class="block text-left w-full ">Logout</button>
+          <button on:click={logout} class="block px-4 py-2 text-left w-full ">Logout</button>
         </div>
       {:else}
         <div class="mt-4 space-y-2">
           <a href="/login" class="block px-4 py-2  bg-white text-black   ">Login</a>
           <a href="/signup" class="block px-4 py-2 bg-white text-black  ">Sign Up</a>
+          
         </div>
       {/if}
     </div>
@@ -160,72 +194,135 @@
     
 
 
-  <!-- Hero Section -->
-  <section class="flex-1 grid grid-cols-1 md:grid-cols-2 items-center gap-8 px-4 md:px-16 py-12">
-    <!-- Text Content -->
-    <div class="text-center md:text-left space-y-5">
-      <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">
-        Fast Delivery <span class="text-blue-600">Right to Your Door</span>
-      </h1>
-      <p class="text-gray-600 text-lg">
-        Order groceries, parcels, electronics, and more with one tap. Reliable. Fast. Local.
-      </p>
-      <button on:click={startOrder} class="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700">
-        Start Your Delivery
-      </button>
-    </div>
-
-    <!-- Image -->
-    <div class="flex justify-center">
-      <img src="/home.png" alt="Delivery Image" class="max-w-full h-auto rounded-lg shadow-lg" />
-    </div>
+<!-- Title -->
+  <section class="text-center">
+    <h1 class="text-4xl md:text-5xl font-bold text-blue-700">🚌 Local Bus Tracker</h1>
+    <p class="text-lg md:text-xl mt-2 text-gray-700">Track local and rural buses in real time</p>
   </section>
 
+<div class="p-4 max-w-xl mx-auto">
+  <input
+    type="text"
+    placeholder="Search bus number or route..."
+    bind:value={query}
+    class="w-full p-2 rounded border border-gray-300 mb-4"
+    on:input={search}
+  />
+
+  {#if results.length > 0}
+    <ul class="space-y-2">
+      {#each results as item}
+        <li class="p-3 bg-blue-100 rounded">{item.name} – {item.route}</li>
+      {/each}
+    </ul>
+  {:else if query}
+    <p class="text-gray-500">No results found.</p>
+  {/if}
+</div>
+
+
+
+<style>
+  /* If you prefer plain CSS, keep this — or convert to Tailwind below */
+  #liveMap {
+    height: calc(100vh - 64px);   /* subtract your 64 px nav‑bar */
+    width: 100%;
+  }
+</style>
+
+<!-- Container -->
+<div class="pt-16 px-4 md:px-20"> 
+  <h1>Live Location and Nearby Bus</h1> <!-- px-4 on mobile,  px-20 ≥768 px -->
+  <div id="liveMap"
+       class="rounded shadow border w-full
+              /* Pure‑Tailwind alternative for the height line above: */
+              h-[calc(100dvh-4rem)]  /* 4 rem ≈ 64 px */">
+  </div>
+</div>
+
+
+
+<div class="flex flex-col mt-50 ">
+  <!-- Only Right side (Nearby Buses) -->
+  <div class="flex p-4">
+    <h2 class="text-xl justify-center font-bold mb-4">Nearby Buses </h2>
+
+    <!-- Clickable map button or area -->
+    <button
+      on:click={openMap}
+      class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition ml-20"
+    >
+      📍 View Nearby Buses on Map
+    </button>
+  </div>
+<div>
+
+
+<!-- Input Fields (Responsive for Mobile App and Desktop) -->
+<!-- Input Fields Section - Fully Responsive -->
+<div class="w-full px-4 md:px-12 py-4">
+  <div class="flex flex-col md:flex-row gap-4">
+    
+    <!-- Starting Point Input -->
+    <div class="w-full md:w-1/2">
+      <label class="block text-sm font-semibold text-gray-700 mb-1"></label>
+      <input
+        type="text"
+        bind:value={startPoint}
+        placeholder="Starting Point"
+        class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
+    </div>
+
+    <!-- Destination Input -->
+    <div class="w-full md:w-1/2">
+      <label class="block text-sm font-semibold text-gray-700 mb-1"></label>
+      <input
+        type="text"
+        bind:value={destination}
+        placeholder="Destination"
+        class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
+    </div>
+
+  </div>
+</div>
+
+
+
+</div>
+
+
+</div>
 
 
 
 
-<section class="min-h-screen flex flex-col justify-center items-center px-4 py-12 text-center">
-  <div class="max-w-3xl space-y-6">
-    <h1 class="text-4xl font-extrabold text-gray-800">About <span class="text-blue-600"></span></h1>
-    <p class="text-gray-600 text-lg">
-      <strong>GharTak</strong> is your trusted local delivery partner, bringing anything you need from the market directly to your doorstep. Whether it's groceries, electronics, household goods, or small parcels—we make delivery fast, affordable, and reliable.
+
+
+<!-- About Section -->
+<section class="mt-0">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="text-3xl font-bold text-blue-700 mb-4">About Local Bus Track</h2>
+    <p class="text-gray-700 text-base md:text-lg leading-relaxed">
+      <span class="font-semibold">Local Bus Track</span> is a smart solution designed specifically for rural and 3-tier cities to help passengers easily track nearby buses in real time. 
+      Our platform makes public transport more accessible, reduces waiting times, and helps passengers plan their journeys more efficiently.
     </p>
 
-    <p class="text-gray-600 text-lg">
-      Built with the idea of empowering local businesses and connecting people across neighborhoods, GharTak helps customers get everything they need <strong>without stepping out of their home</strong>.
-    </p>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-      <div class="bg-white shadow rounded-lg p-4">
-        <h2 class="text-xl font-bold text-blue-600 mb-2">🚀 Fast Delivery</h2>
-        <p class="text-gray-600">Your essentials delivered in record time with live tracking.</p>
-      </div>
-      <div class="bg-white shadow rounded-lg p-4">
-        <h2 class="text-xl font-bold text-blue-600 mb-2">🤝 Trusted Partners</h2>
-        <p class="text-gray-600">All deliveries handled by verified and trained delivery partners.</p>
-      </div>
-      <div class="bg-white shadow rounded-lg p-4">
-        <h2 class="text-xl font-bold text-blue-600 mb-2">📱 Easy to Use</h2>
-        <p class="text-gray-600">Order in just a few taps with a clean and modern interface.</p>
-      </div>
+    <div class="mt-8">
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">Key Features:</h3>
+      <ul class="text-left list-disc list-inside text-gray-600 space-y-2">
+        <li>📍 Real-time nearby bus tracking on map</li>
+        <li>🚌 Simple start and destination input for route info</li>
+        <li>📱 Mobile-friendly design for easy rural access</li>
+        <li>🌐 Works in low-connectivity areas</li>
+        <li>🗺️ User-friendly interface for all age groups</li>
+      </ul>
     </div>
   </div>
 </section>
 
 
-
-
-
-
-
-
-
-<section class="min-h-screen  flex flex-col justify-center items-center text-center px-4 py-12">
-  <h1 class="text-4xl font-bold text-gray-800 mb-6">GharTak Gallery </h1>
-  <img src="/ga.png" alt="Grocery Delivery" class="w-full max-w-3xl rounded-xl shadow-lg" />
-  <p class="mt-6 text-gray-600 text-lg">Fresh groceries delivered <strong>GharTak</strong> – fast and safe!</p>
-</section>
 
 
 
@@ -283,30 +380,31 @@
  <footer class="bg-gray-900 text-gray-300 py-8 px-4">
   <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
     <div>
-      <h2 class="text-xl font-bold text-white mb-3">GharTak</h2>
-      <p class="text-gray-400">Fast, reliable, and safe delivery — from any place to your doorstep.</p>
+      <h2 class="text-xl font-bold text-white mb-3">Local Bus Track</h2>
+      <p class="text-gray-400">Local Bus Track is a smart solution designed specifically for rural and 3-tier cities to help passengers easily track nearby buses in real time. 
+      Our platform makes public transport more accessible, reduces waiting times, and helps passengers plan their journeys more efficiently.</p>
     </div>
 
     <div>
       <h3 class="font-semibold text-white mb-2">Quick Links</h3>
       <ul class="space-y-1">
-        <li><a href="/" class="hover:text-white">Home</a></li>
-        <li><a href="/gallery" class="hover:text-white">Gallery</a></li>
-        <li><a href="/track" class="hover:text-white">Track Order</a></li>
+        <li><a href="/" class="hover:text-white">About</a></li>
+        <li><a href="/gallery" class="hover:text-white">bus timing</a></li>
+        <li><a href="/track" class="hover:text-white">Live Location</a></li>
         <li><a href="/contact" class="hover:text-white">Contact Us</a></li>
       </ul>
     </div>
 
     <div>
       <h3 class="font-semibold text-white mb-2">Contact</h3>
-      <p class="text-gray-400 text-sm">Email: support@ghartak.com</p>
+      <p class="text-gray-400 text-sm">Email: support@localbus.com</p>
       <p class="text-gray-400 text-sm">Phone: +91 63751 07576</p>
       <p class="text-gray-400 text-sm">Location: Jaipur, India</p>
     </div>
   </div>
 
   <div class="mt-6 border-t border-gray-700 pt-4 text-center text-gray-500 text-sm">
-    © 2025 GharTak. All rights reserved.
+    © 2025 local bus. All rights reserved.
   </div>
 </footer>
 
